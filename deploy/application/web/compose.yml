@@ -1,0 +1,29 @@
+name: phoneweave-web
+
+services:
+  control-server:
+    build:
+      context: ${SOURCE_DIR:?SOURCE_DIR is required}
+      dockerfile: Dockerfile
+    image: phoneweave/control-server:local
+    container_name: phoneweave-control-server
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    env_file:
+      - ${RUNTIME_ENV_FILE:-.env}
+    ports:
+      - "${PORT:-8787}:8787"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:8787/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - edge
+
+networks:
+  edge:
+    name: phoneweave-edge
+    external: true

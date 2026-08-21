@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cmd="${1:-help}"
+shift || true
+case "$cmd" in
+  bootstrap) exec "$ROOT/scripts/bootstrap.sh" "$@" ;;
+  doctor) exec "$ROOT/scripts/doctor.sh" "$@" ;;
+  dev|server) exec "$ROOT/scripts/dev.sh" "$@" ;;
+  web-dev) exec "$ROOT/scripts/dev-web.sh" "$@" ;;
+  vscode-web-dev) exec "$ROOT/scripts/vscode-web-dev.sh" "$@" ;;
+  web-ensure) exec "$ROOT/scripts/web-dev-ensure.sh" "$@" ;;
+  web-stop) exec "$ROOT/scripts/web-dev-stop.sh" "$@" ;;
+  web-build) exec "$ROOT/scripts/build-web.sh" "$@" ;;
+  up) exec "$ROOT/scripts/up.sh" "$@" ;;
+  down) exec "$ROOT/scripts/down.sh" "$@" ;;
+  logs) exec "$ROOT/scripts/logs.sh" "$@" ;;
+  logs-android) exec "$ROOT/scripts/logs-android.sh" "$@" ;;
+  logs-remote) exec "$ROOT/scripts/logs-remote.sh" "$@" ;;
+  android-status) exec "$ROOT/scripts/android-status.sh" "$@" ;;
+  deploy-turn) exec "$ROOT/deploy/application/deploy-turn.sh" "$@" ;;
+  deploy-web) exec "$ROOT/deploy/application/deploy-web.sh" "$@" ;;
+  deploy-server) exec "$ROOT/deploy-server.sh" "$@" ;;
+  logs) exec "$ROOT/scripts/logs.sh" "$@" ;;
+  android-sdk) exec "$ROOT/scripts/android-sdk-path.sh" "$@" ;;
+  android-build) exec "$ROOT/scripts/build-android.sh" "$@" ;;
+  android-install) exec "$ROOT/scripts/install-android.sh" "$@" ;;
+  emulator-list) exec "$ROOT/scripts/emulator-list.sh" "$@" ;;
+  emulator-start) exec "$ROOT/scripts/emulator-start.sh" "$@" ;;
+  emulator-run) exec "$ROOT/scripts/android-run-emulator.sh" "$@" ;;
+  mcp) exec "$ROOT/scripts/mcp.sh" "$@" ;;
+  test) (cd "$ROOT/server" && npm test) ;;
+  smoke) exec "$ROOT/scripts/smoke.sh" "$@" ;;
+  help|*)
+    cat <<'HELP'
+PhoneWeave commands:
+  bootstrap        Install Node/MCP dependencies and create .env
+  doctor           Check local prerequisites, including auto-detected Android SDK
+  dev              Run control server locally
+  web-dev          Run Shadcn/Tailwind Web Console dev server on :5173
+  vscode-web-dev   Run Vite as a VS Code-managed background task
+  web-ensure       Ensure a detached Vite dev server is ready on :5173
+  web-stop         Stop the Vite process started by web-ensure
+  web-build        Build Web Console into web-console/dist
+  up               Start Docker control server + coturn
+  down             Stop Docker services
+  logs             Follow local Docker logs
+  logs-android     Stream real-time Android Agent logs (or logs-android crash/all)
+  logs-remote      Stream remote server logs (server | turn | all)
+  android-status   Diagnose Android Agent status, config, PID, and take screenshots
+  deploy-turn      Deploy/update remote coturn application
+  deploy-web       Build/deploy remote Web Console and control server
+  deploy-server    Deploy TURN and Web server directly by IP
+
+  android-sdk      Print the detected Android SDK path
+  android-build    Build Android debug APK
+  android-install  Install debug APK through adb
+  emulator-list    List Android Studio AVDs
+  emulator-start   Start an AVD (arg or PHONEWEAVE_AVD; defaults to first AVD)
+  emulator-run     Start emulator if needed, build APK, install and open it
+
+  mcp              Start MCP stdio gateway
+  test             Run server tests
+  smoke            Run dependency-free syntax/unit smoke checks
+HELP
+    ;;
+esac

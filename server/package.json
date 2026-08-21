@@ -1,0 +1,15 @@
+{
+  "name": "@phoneweave/server",
+  "version": "0.1.1",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node src/server.mjs",
+    "dev": "node --watch src/server.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "ws": "8.21.3"
+  },
+  "license": "Apache-2.0"
+}

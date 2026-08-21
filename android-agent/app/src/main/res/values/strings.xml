@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PhoneWeave Agent</string>
+    <string name="accessibility_description">Allows PhoneWeave to execute explicitly authorized remote UI actions and read the current accessibility tree.</string>
+</resources>

@@ -1,0 +1,26 @@
+services:
+  phoneweave:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    env_file:
+      - .env
+      - agent-version.properties
+    ports:
+      - "${PORT:-8787}:8787"
+    restart: unless-stopped
+
+  coturn:
+    image: coturn/coturn:4.17.2-debian
+    network_mode: host
+    restart: unless-stopped
+    command: >-
+      -n
+      --log-file=stdout
+      --fingerprint
+      --lt-cred-mech
+      --realm=${TURN_REALM:-phoneweave.local}
+      --user=${TURN_USER:-phoneweave}:${TURN_PASSWORD:-change-me-turn}
+      --min-port=49160
+      --max-port=49200
+      --no-cli

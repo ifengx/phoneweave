@@ -1,0 +1,41 @@
+name: phoneweave-turn
+
+services:
+  turn:
+    image: coturn/coturn:4.16.0-r0-debian
+    container_name: phoneweave-turn
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    command:
+      - -n
+      - --log-file=stdout
+      - --fingerprint
+      - --lt-cred-mech
+      - --no-tls
+      - --no-dtls
+      - --pidfile=/tmp/turnserver.pid
+      - --realm=${TURN_REALM:?TURN_REALM is required}
+      - --user=${TURN_USER:?TURN_USER is required}:${TURN_PASSWORD:?TURN_PASSWORD is required}
+      - --external-ip=${TURN_EXTERNAL_IP:?TURN_EXTERNAL_IP is required}
+      - --listening-port=3478
+      - --min-port=49160
+      - --max-port=49200
+      - --no-multicast-peers
+    healthcheck:
+      test: ["CMD", "turnutils_stunclient", "-p", "3478", "127.0.0.1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    ports:
+      - "3478:3478/tcp"
+      - "3478:3478/udp"
+      - "49160-49200:49160-49200/udp"
+    networks:
+      - edge
+
+networks:
+  edge:
+    name: phoneweave-edge
+    external: true

@@ -1,0 +1,80 @@
+openapi: 3.1.0
+info:
+  title: PhoneWeave Control API
+  version: 0.1.0
+  description: REST control surface for authorized real mobile devices.
+servers:
+  - url: http://localhost:8787
+components:
+  securitySchemes:
+    AdminToken:
+      type: apiKey
+      in: header
+      name: x-admin-token
+  schemas:
+    Action:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum: [tap, swipe, input_text, back, home, recents, launch_app, ui_tree, snapshot]
+security:
+  - AdminToken: []
+paths:
+  /api/health:
+    get:
+      security: []
+      responses:
+        '200': { description: Healthy }
+  /api/devices:
+    get:
+      responses:
+        '200': { description: Connected and known devices }
+  /api/devices/{deviceId}:
+    get:
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Device status }
+  /api/devices/{deviceId}/takeover:
+    post:
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Human lease acquired }
+  /api/devices/{deviceId}/release:
+    post:
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Control lease released }
+  /api/devices/{deviceId}/action:
+    post:
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source: { type: string, enum: [agent, human] }
+                owner: { type: string }
+                action: { $ref: '#/components/schemas/Action' }
+      responses:
+        '200': { description: Action completed }
+        '423': { description: Device currently controlled by human }
